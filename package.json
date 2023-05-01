@@ -1,0 +1,23 @@
+{
+  "name": "spartan-gold-extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "FixedMerkleBlock.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michmoosch/spartan-gold-extension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michmoosch/spartan-gold-extension/issues"
+  },
+  "homepage": "https://github.com/michmoosch/spartan-gold-extension#readme",
+  "dependencies": {
+    "spartan-gold": "^1.0.7"
+  }
+}
