@@ -1,11 +1,10 @@
 "use strict";
 
-const utils = require('./utils.js');
+const { utils } = require("spartan-gold");
 
 // Stores transactions in a MerkleTree format.
 // The tree will be perfectly balanced.
 class MerkleTree {
-
   // Returns the size
   static calculateSize(numElems) {
     // Calculate a power of 2 at least as large as numElems.
@@ -16,19 +15,19 @@ class MerkleTree {
     // We need almost double the space to hold the parent hashes.
     // E.g. if we have 8 transactions, we need to store their 8
     // hashes plus the 7 parent hashes.
-    return (n * 2) - 1;
+    return n * 2 - 1;
   }
 
   // Hashes from a node to the Merkle root, or until it does not have
   // the other half of the hash needed to continue to the root.
   static hashToRoot(hashes, i) {
     if (i === 0) return;
-    let par = (i-2)/2;
-    hashes[par] = utils.hash("" + hashes[i-1] + "," + hashes[i]);
+    let par = (i - 2) / 2;
+    hashes[par] = utils.hash("" + hashes[i - 1] + "," + hashes[i]);
 
     // Test to see if we are the right subnode.  If so, we can hash
     // with the left subnode to continue one level up.
-    if (par%2 === 0) {
+    if (par % 2 === 0) {
       this.hashToRoot(hashes, par);
     }
   }
@@ -50,12 +49,16 @@ class MerkleTree {
     // Hashes of transactions start in the middle of the array.
     let firstTrans = Math.floor(numBalancedTree / 2);
 
-    for (let i=firstTrans; i<numBalancedTree; i++) {
+    for (let i = firstTrans; i < numBalancedTree; i++) {
       let tNum = i - firstTrans;
 
       // If we have less than a power of 2 elements,
       // we pad out the transactions and arrays with the last element
-      let v = tNum<transactions.length ? transactions[tNum].toString() : this.transactions[tNum-1];
+      let v =
+        tNum < transactions.length
+          ? transactions[tNum].toString()
+          : this.transactions[tNum - 1];
+
       let h = utils.hash(v);
 
       this.transactions[tNum] = v;
@@ -64,7 +67,7 @@ class MerkleTree {
     }
 
     // Completing inner nodes of Merkle tree
-    for (let i=firstTrans+1; i<this.hashes.length; i+=2) {
+    for (let i = firstTrans + 1; i < this.hashes.length; i += 2) {
       this.constructor.hashToRoot(this.hashes, i);
     }
   }
@@ -89,17 +92,16 @@ class MerkleTree {
     path[i] = h;
     let parentHash = "";
 
-    while(i > 0) {
-        if (i % 2 !== 0) {
-            parentHash = utils.hash(this.hashes[i] + "," + this.hashes[i+1]);
-            i = (i-1)/2;
-        }
-        else {
-            parentHash = utils.hash(this.hashes[i-1] + "," + this.hashes[i]);
-            i = (i-2)/2;
-        }
+    while (i > 0) {
+      if (i % 2 !== 0) {
+        parentHash = utils.hash(this.hashes[i] + "," + this.hashes[i + 1]);
+        i = (i - 1) / 2;
+      } else {
+        parentHash = utils.hash(this.hashes[i - 1] + "," + this.hashes[i]);
+        i = (i - 2) / 2;
+      }
 
-        path[i] = parentHash;
+      path[i] = parentHash;
     }
 
     return path;
@@ -117,20 +119,19 @@ class MerkleTree {
     // If the Merkle root matches the path, return true.
 
     while (i > 0) {
-        if (i % 2 !== 0) {
-            i = (i-1)/2;
-            let temp = this.hashes[i];
-            if (path[i] !== temp) {
-                return false;
-            }
+      if (i % 2 !== 0) {
+        i = (i - 1) / 2;
+        let temp = this.hashes[i];
+        if (path[i] !== temp) {
+          return false;
         }
-        else {
-            i = (i-2)/2;
-            let temp = this.hashes[i];
-            if (path[i] !== temp) {
-                return false;
-            }
+      } else {
+        i = (i - 2) / 2;
+        let temp = this.hashes[i];
+        if (path[i] !== temp) {
+          return false;
         }
+      }
     }
     return true;
   }
@@ -154,16 +155,16 @@ class MerkleTree {
 
     while (i < this.hashes.length) {
       // Truncating hashes for the sake of readability
-      s += this.hashes[i].slice(0,6) + " ";
+      s += this.hashes[i].slice(0, 6) + " ";
       if (i === nextRow) {
         console.log(s);
+
         s = "";
-        nextRow = (nextRow+1) * 2;
+        nextRow = (nextRow + 1) * 2;
       }
       i++;
     }
   }
 }
-
 
 exports.MerkleTree = MerkleTree;
