@@ -11,7 +11,7 @@ module.exports = class FixedMerkleBlock extends Block {
   /**
    * The constructor calls the parent constructor
    */
-  constructor(rewardAddr, prevBlock, target, coinbaseReward, blockSize = 5) {
+  constructor(rewardAddr, prevBlock, target, coinbaseReward, blockSize = 3) {
     super(rewardAddr, prevBlock, target, coinbaseReward);
     this.blockSize = blockSize;
     this.transactions = new Map();
@@ -81,15 +81,17 @@ module.exports = class FixedMerkleBlock extends Block {
       });
 
       // If block is full, and no lower value transactions are found, transaction is not added.
-      if (flag) return false;
+      if (flag) {
+        if (client) client.log(`Transaction ${tx.id} not added to block.`);
+        return false;
+      }
     }
 
     // Adding the transaction to the block
     this.transactions.set(tx.id, tx);
     this.merkleTree = new MerkleTree([...this.transactions.keys()]);
 
-    console.log("Displaying Merkle Tree:");
-    this.merkleTree.display();
+    
 
     // Taking gold from the sender
     let senderBalance = this.balanceOf(tx.from);
@@ -101,6 +103,37 @@ module.exports = class FixedMerkleBlock extends Block {
       this.balances.set(address, amount + oldBalance);
     });
 
+    this.merkleTree.display();
     return true;
   }
+
+  contains(tx){
+    if(this.merkleTree === null){
+      return false;
+    }
+    return this.merkleTree.contains(tx.id);
+  }
+
+  rerun(prevBlock) {
+    // Setting balances to the previous block's balances.
+    this.balances = new Map(prevBlock.balances);
+    this.nextNonce = new Map(prevBlock.nextNonce);
+
+    // Adding coinbase reward for prevBlock.
+    let winnerBalance = this.balanceOf(prevBlock.rewardAddr);
+    if (prevBlock.rewardAddr) this.balances.set(prevBlock.rewardAddr, winnerBalance + prevBlock.totalRewards());
+
+    // Re-adding all transactions.
+    let txs = this.transactions;
+    this.transactions = new Map();
+    for (let tx of txs.values()) {
+      let success = this.addTransaction(tx);
+      // if (!success) return false;
+    }
+
+    return true;
+  }
+
+
+  
 };

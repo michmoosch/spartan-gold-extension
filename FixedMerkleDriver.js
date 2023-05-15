@@ -9,12 +9,12 @@ const FixedMerkleBlock = require("./FixedMerkleBlock.js");
 // steps so that the proof-of-work target can be passed along without
 // a problem.  A better approach would have the receiving client
 // recalculate the target... but meh.
-let deserializeBlockOriginal = Blockchain.deserializeBlock;
-Blockchain.deserializeBlock = function (o) {
-  let block = deserializeBlockOriginal(o);
-  block.adjustedTarget = o.adjustedTarget;
-  return block;
-};
+// let deserializeBlockOriginal = Blockchain.deserializeBlock;
+// Blockchain.deserializeBlock = function (o) {
+//   let block = deserializeBlockOriginal(o);
+//   block.adjustedTarget = o.adjustedTarget;
+//   return block;
+// };
 
 console.log("Starting simulation.  This may take a moment...");
 
@@ -86,8 +86,6 @@ alice.postTransaction([{ amount: 40, address: bob.address }]);
 console.log(`Scrooge is transferring 100 gold to ${bob.address}`);
 scrooge.postTransaction([{ amount: 100, address: bob.address }]);
 
-console.log(`Scrooge is transferring 12 gold to ${charlie.address}`);
-scrooge.postTransaction([{ amount: 12, address: charlie.address }]);
 
 console.log(`Scrooge is transferring 50 gold to ${mickey.address}`);
 scrooge.postTransaction([{ amount: 50, address: mickey.address }]);
@@ -95,13 +93,16 @@ scrooge.postTransaction([{ amount: 50, address: mickey.address }]);
 console.log(`Scrooge is transferring 50 gold to ${minnie.address}`);
 scrooge.postTransaction([{ amount: 50, address: minnie.address }]);
 
+console.log(`Scrooge is transferring 12 gold to ${charlie.address}`);
+scrooge.postTransaction([{ amount: 12, address: charlie.address }]);
+
 // Print out the final balances after it has been running for some time.
 let showFinalBalances = function () {
   // Keep going if you have not made many blocks yet.
-  if (minnie.currentBlock.chainLength < 10) {
-    setTimeout(showFinalBalances, 2000);
-    return;
-  }
+  // if (minnie.currentBlock.chainLength < 10) {
+  //   setTimeout(showFinalBalances, 2000);
+  //   return;
+  // }
 
   console.log();
   console.log(
@@ -115,4 +116,4 @@ let showFinalBalances = function () {
   process.exit(0);
 };
 
-setTimeout(showFinalBalances, 7000);
+setTimeout(showFinalBalances, 4000);

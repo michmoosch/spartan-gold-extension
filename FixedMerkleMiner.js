@@ -1,9 +1,9 @@
 "use strict";
 
 const { Miner, utils } = require('spartan-gold');
+let Blockchain = require('./blockchain.js');
 
 
-const SIZE_LIMIT = 1000;
 
 // To do - Everything else
 
@@ -16,4 +16,9 @@ module.exports = class FixedMerkleMiner extends Miner {
         // Set of transactions to be added to the next block.
         this.transactions = new Set();
       }
+
+      // announceProof(){
+      //   console.log(this.currentBlock.merkleTree.display())
+      //   this.net.broadcast(Blockchain.PROOF_FOUND, this.currentBlock);
+      // }
 }
